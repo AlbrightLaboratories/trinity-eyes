@@ -1,0 +1,77 @@
+# Trinity Eyes Provider Configuration
+# 
+# Each category has a fallback chain - providers are tried in order.
+# Free providers are used first; paid slots are disabled by default.
+
+providers:
+  indices:
+    chain:
+      # Free sources (enabled by default)
+      - name: yfinance
+        type: free
+        rate_limit: 2000/hour
+      - name: alpha_vantage
+        type: free
+        rate_limit: 25/day
+        # api_key: ${ALPHA_VANTAGE_API_KEY}
+      - name: finnhub
+        type: free
+        rate_limit: 60/minute
+        # api_key: ${FINNHUB_API_KEY}
+      
+      # Paid slots (disabled until configured)
+      - name: twelve_data
+        type: paid
+        enabled: false
+        rate_limit: 800/minute
+        # api_key: ${TWELVE_DATA_API_KEY}
+
+  futures:
+    chain:
+      - name: yfinance
+        type: free
+      - name: alpha_vantage
+        type: free
+      # Paid slot
+      - name: twelve_data
+        type: paid
+        enabled: false
+
+  forex:
+    chain:
+      - name: yfinance
+        type: free
+      - name: alpha_vantage
+        type: free
+      - name: ecb
+        type: free  # Official ECB rates
+      # Paid slot
+      - name: twelve_data
+        type: paid
+        enabled: false
+
+  yields:
+    chain:
+      - name: fred
+        type: free  # Official Federal Reserve
+        # api_key: ${FRED_API_KEY}
+      - name: yfinance
+        type: free
+
+  economic:
+    chain:
+      - name: finnhub
+        type: free
+        # api_key: ${FINNHUB_API_KEY}
+      - name: fred
+        type: free
+
+cache:
+  backend: memory  # or "redis" for distributed
+  ttl:
+    indices: 300      # 5 minutes
+    futures: 60       # 1 minute
+    forex: 60         # 1 minute
+    quotes: 60        # 1 minute
+    yields: 3600      # 1 hour
+    economic: 86400   # 1 day
