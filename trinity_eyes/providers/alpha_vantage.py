@@ -1,12 +1,22 @@
 """Alpha Vantage provider - free tier with API key."""
 
 import asyncio
+import re
 import aiohttp
 from datetime import datetime
 from typing import Optional
 
 from .base import BaseProvider
 from ..models import Index, Quote, Forex
+
+
+# Plain US-listed ticker (SPY, AAPL, BRK.B). Anything else (^N225, ES=F,
+# 000001.SS) is not served by GLOBAL_QUOTE and must not spend a request.
+_US_TICKER = re.compile(r"^[A-Z]{1,5}(\.[A-Z])?$")
+
+
+class UnsupportedSymbolError(ValueError):
+    """Symbol is outside what Alpha Vantage GLOBAL_QUOTE serves."""
 
 
 class AlphaVantageProvider(BaseProvider):
@@ -30,6 +40,8 @@ class AlphaVantageProvider(BaseProvider):
     
     async def fetch(self, symbol: str) -> Index:
         """Fetch index/stock data."""
+        if not _US_TICKER.match(symbol):
+            raise UnsupportedSymbolError(f"Alpha Vantage does not serve {symbol!r}")
         if not self.api_key:
             raise ValueError("Alpha Vantage API key not configured")
         
