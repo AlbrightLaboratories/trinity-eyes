@@ -32,7 +32,7 @@ all = [
 ]
 
 [project.scripts]
-trinity-eyes = "src.cli:main"
+trinity-eyes = "trinity_eyes.cli:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -186,7 +186,7 @@ class Eyes:
             return cached
         
         chain = self.chains.get("forex")
-        result = await chain.fetch(pair)
+        result = await chain.fetch_forex(pair)
         await self.cache.set("forex", pair, result)
         return result
     

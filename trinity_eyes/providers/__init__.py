@@ -122,6 +122,24 @@ class ProviderChain:
         
         raise RuntimeError(f"All providers failed for quote {symbol}")
     
+    async def fetch_forex(self, pair: str) -> Any:
+        """Fetch forex data with fallback."""
+        errors = []
+        
+        for provider in self.providers:
+            if not hasattr(provider, 'fetch_forex'):
+                continue
+            try:
+                result = await provider.fetch_forex(pair)
+                self._failures[provider.name] = 0
+                return result
+            except Exception as e:
+                self._failures[provider.name] = self._failures.get(provider.name, 0) + 1
+                errors.append(f"{provider.name}: {e}")
+                continue
+        
+        raise RuntimeError(f"All providers failed for forex {pair}")
+    
     async def fetch_calendar(self, days_ahead: int) -> List[Any]:
         """Fetch economic calendar with fallback."""
         for provider in self.providers:
